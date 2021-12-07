@@ -1,13 +1,10 @@
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
-const filters = { categories: ["Football", "Metal", "Food"], dateRange: ["2020-11-16", "2021-12-15"] }
-
 const getData = async () => {
     // gets the event data from the backend
     const data = await fetch('https://lippupalvelu.herokuapp.com/api/events/')
     return await data.json();
 }
-
 
 const dateChecker = (events, dateRange) => {
     // if no date filter, return all events
@@ -33,16 +30,22 @@ const categoryChecker = (events, filterCategories) => {
         return events
     }
 
+    // map filtercategories to lowercase
+    const categoriesLower = filterCategories.map(category => {
+        return category.toLowerCase();
+    })
+
     // filter events by given categories
     let eventsFilteredArray = events.filter(event => {
         let isCategoryInEvent = false;
         //map categories of particular event
         const eventCategories = event.category.map(category => {
-            return category.name
+            return category.name.toLowerCase()
         })
+
         // check if event's categories include any filter category
         eventCategories.forEach(category => {
-            if (filterCategories.includes(category)) {
+            if (categoriesLower.includes(category)) {
                 isCategoryInEvent = true;
             }
         })
